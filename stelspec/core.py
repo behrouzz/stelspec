@@ -62,3 +62,16 @@ def sophie_spec(obj):
     url, df = _get_df(BASE, desc_so_spec, int_cols, float_cols)
     print(url.replace('a=csv', 'a=htab'))
     return df
+
+#http://atlas.obs-hp.fr/elodie/E.cgi?&c=i&o=elodie:19940914/0022&z=s1d&a=mime:application/x-fits
+#http://atlas.obs-hp.fr/sophie/sophie.cgi?c=i&a=mime:application/x-fits&o=sophie:923830&z=s1d IRAD DARER
+#http://atlas.obs-hp.fr/sophie/sophie.cgi?c=i&a=mime:application/x-fits&o=sophie:[s1d,923830]
+
+def get_spec(dataset, imanum, s1d=True):
+    s1 = '&z=s1d' if s1d else ''
+    PAR1 = f'&c=i&o=elodie:{dataset}/{imanum}'
+    PAR2 = s1 + '&a=mime:application/x-fits'
+    url = BASE + PAR1+ PAR2
+    sp_typ = 's1d_' if s1d else 's2d_'
+    filename = sp_typ + f'elodie_{dataset}_{imanum}.fits'
+    return url, filename
