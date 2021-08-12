@@ -20,10 +20,10 @@ Let's start by creating an Elodie instance by passing an object name:
 ```python
 import stelspec as sp
 
-el = Elodie('HD217014')
+el = sp.Elodie('HD217014')
 ```
 
-You can access two tables, ccf and Spectra, as pandas DataFrame.
+You can access two tables, CCF and Spectra, as pandas DataFrame.
 
 ```python
 # table: Cross-Correlation Functions
@@ -46,4 +46,4 @@ el.get_spec(dataset=19960831, imanum='0017', path='data/', s1d=Flase)
 The same process can be done for Sophie, except that instead of *dataset* and
 *imanum*, you should pass the *seq* number.
 
-For a brief help the structure of FITS files, see [ELODIE](http://atlas.obs-hp.fr/elodie/500/download.html) and [SOPHIE](http://atlas.obs-hp.fr/sophie/spec_help.html).
+For a brief help on the structure of FITS files, see [ELODIE](http://atlas.obs-hp.fr/elodie/500/download.html) and [SOPHIE](http://atlas.obs-hp.fr/sophie/spec_help.html).
