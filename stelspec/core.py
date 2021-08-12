@@ -1,3 +1,9 @@
+"""
+Module catalogues
+=================
+This module retrieves data from ELODIE/SOPHIE archive.
+"""
+
 import numpy as np
 import pandas as pd
 import requests
@@ -19,59 +25,97 @@ def _get_df(base, col_dc, int_cols, float_cols):
     df[int_cols] = df[int_cols].astype(int)
     return url, df
 
-def elodie_ccf(obj):
-    """
-    Elodie Cross-Correlation Functions table
-    """
-    BASE = f'http://atlas.obs-hp.fr/elodie/fE.cgi?n=e501&o={obj}&ob=jdb&a=csv&&d='
-    int_cols = ['datenuit']
-    float_cols = ['jdb','exptim','sn','vfit','sigfit','ampfit','ctefit']
-    url, df = _get_df(BASE, desc_el_ccf, int_cols, float_cols)
-    print(url.replace('a=csv', 'a=htab'))
-    return df
 
-def elodie_spec(obj):
-    """
-    Elodie Spectra table
-    """
-    BASE = f'http://atlas.obs-hp.fr/elodie/fE.cgi?o={obj}&a=csv&d='
-    int_cols = ['dataset']
-    float_cols = ['exptime','sn','vfit','sigfit','ampfit']
-    url, df = _get_df(BASE, desc_el_spec, int_cols, float_cols)
-    print(url.replace('a=csv', 'a=htab'))
-    return df
+class Elodie:
+    def __init__(self, obj):
+        """
+        Elodie class
 
-def sophie_ccf(obj):
-    """
-    Sophie Cross-Correlation Functions table
-    """
-    BASE = f'http://atlas.obs-hp.fr/sophie/sophie.cgi?n=sophiecc&ob=bjd&a=csv&o={obj}&d='
-    int_cols = ['seq','sseq','slen','nexp','expno','ccf_offline','maxcpp','lines']
-    float_cols = ['bjd','rv','err','dvrms','fwhm','span','contrast','sn26']
-    url, df = _get_df(BASE, desc_so_ccf, int_cols, float_cols)
-    print(url.replace('a=csv', 'a=htab'))
-    return df
+        Parameters
+        ----------
+        obj (str) : object name
 
-def sophie_spec(obj):
-    """
-    Sophie Spectra table
-    """
-    BASE = f'http://atlas.obs-hp.fr/sophie/sophie.cgi?n=sophie&a=csv&ob=bjd&c=o&o={obj}&d='
-    int_cols = ['seq','sseq','slen','nexp','expno']
-    float_cols = ['bjd','sn26','exptime']
-    url, df = _get_df(BASE, desc_so_spec, int_cols, float_cols)
-    print(url.replace('a=csv', 'a=htab'))
-    return df
+        Methods
+        -------
+        ccf : return Cross-Correlation Functions table
+        spect : Spectra table
+        """
+        self.obj = obj
 
-#http://atlas.obs-hp.fr/elodie/E.cgi?&c=i&o=elodie:19940914/0022&z=s1d&a=mime:application/x-fits
-#http://atlas.obs-hp.fr/sophie/sophie.cgi?c=i&a=mime:application/x-fits&o=sophie:923830&z=s1d IRAD DARER
-#http://atlas.obs-hp.fr/sophie/sophie.cgi?c=i&a=mime:application/x-fits&o=sophie:[s1d,923830]
+    def ccf(self):
+        """
+        Elodie Cross-Correlation Functions table
+        """
+        BASE = f'http://atlas.obs-hp.fr/elodie/fE.cgi?n=e501&o={self.obj}&ob=jdb&a=csv&&d='
+        int_cols = ['datenuit']
+        float_cols = ['jdb','exptim','sn','vfit','sigfit','ampfit','ctefit']
+        url, df = _get_df(BASE, desc_el_ccf, int_cols, float_cols)
+        print(url.replace('a=csv', 'a=htab'))
+        return df
 
-def get_spec(dataset, imanum, s1d=True):
-    s1 = '&z=s1d' if s1d else ''
-    PAR1 = f'&c=i&o=elodie:{dataset}/{imanum}'
-    PAR2 = s1 + '&a=mime:application/x-fits'
-    url = BASE + PAR1+ PAR2
-    sp_typ = 's1d_' if s1d else 's2d_'
-    filename = sp_typ + f'elodie_{dataset}_{imanum}.fits'
-    return url, filename
+    def spec(self):
+        """
+        Elodie Spectra table
+        """
+        BASE = f'http://atlas.obs-hp.fr/elodie/fE.cgi?o={self.obj}&a=csv&d='
+        int_cols = ['dataset']
+        float_cols = ['exptime','sn','vfit','sigfit','ampfit']
+        url, df = _get_df(BASE, desc_el_spec, int_cols, float_cols)
+        print(url.replace('a=csv', 'a=htab'))
+        return df
+
+    def get_spec(dataset, imanum, s1d=True, path=None):
+        BASE = 'http://atlas.obs-hp.fr/elodie/E.cgi?'
+        s1 = '&z=s1d' if s1d else ''
+        PAR1 = f'&c=i&o=elodie:{dataset}/{imanum}'
+        PAR2 = s1 + '&a=mime:application/x-fits'
+        url = BASE + PAR1+ PAR2
+        sp_typ = 's1d_' if s1d else 's2d_'
+        filename = sp_typ + f'elodie_{dataset}_{imanum}.fits'
+        path = '' if path is None else path
+        urlretrieve(url, path+filename)
+
+class Sophie:
+    def __init__(self, obj):
+        """
+        Sophie class
+
+        Parameters
+        ----------
+        obj (str) : object name
+
+        Methods
+        -------
+        ccf : return Cross-Correlation Functions table
+        spect : Spectra table
+        """
+        self.obj = obj
+
+    def ccf(self):
+        """
+        Sophie Cross-Correlation Functions table
+        """
+        BASE = f'http://atlas.obs-hp.fr/sophie/sophie.cgi?n=sophiecc&ob=bjd&a=csv&o={self.obj}&d='
+        int_cols = ['seq','sseq','slen','nexp','expno','ccf_offline','maxcpp','lines']
+        float_cols = ['bjd','rv','err','dvrms','fwhm','span','contrast','sn26']
+        url, df = _get_df(BASE, desc_so_ccf, int_cols, float_cols)
+        print(url.replace('a=csv', 'a=htab'))
+        return df
+
+    def spec(self):
+        """
+        Sophie Spectra table
+        """
+        BASE = f'http://atlas.obs-hp.fr/sophie/sophie.cgi?n=sophie&a=csv&ob=bjd&c=o&o={self.obj}&d='
+        int_cols = ['seq','sseq','slen','nexp','expno']
+        float_cols = ['bjd','sn26','exptime']
+        url, df = _get_df(BASE, desc_so_spec, int_cols, float_cols)
+        print(url.replace('a=csv', 'a=htab'))
+        return df
+
+    def get_spec(seq, path=None):
+        url = f'http://atlas.obs-hp.fr/sophie/sophie.cgi?c=i&a=mime:application/fits&o=sophie:[s1d,{seq}]'
+        filename = f'sophie_[s1d,{seq}].fits'
+        path = '' if path is None else path
+        urlretrieve(url, path+filename)
+
