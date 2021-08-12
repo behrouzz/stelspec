@@ -2,7 +2,7 @@
 **License:** [MIT](https://opensource.org/licenses/MIT)<br/>
 
 # stelspec
-*A python package for retrieving and analysing stellar spectra*
+*A python package for retrieving and analysing stellar spectra (ELODIE-SOPHIE Archive)*
 
 
 ## Installation
