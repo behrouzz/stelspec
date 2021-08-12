@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import requests
 from urllib.request import urlretrieve
-from columns import desc_el_ccf, desc_el_spec, desc_so_ccf, desc_so_spec
+from .columns import desc_el_ccf, desc_el_spec, desc_so_ccf, desc_so_spec
 
 def _get_df(base, col_dc, int_cols, float_cols):
     url = base + str(list(col_dc.keys())).replace("'", "").replace(" ", "")[1:-1]
